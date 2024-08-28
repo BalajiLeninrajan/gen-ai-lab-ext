@@ -59,13 +59,11 @@ function toggleChips(id) {
   if (selectedChips.indexOf(id) == -1) {
     chip.classList.remove("deselected");
     selectedChips.push(id);
-    console.log(selectedChips);
     return;
   }
 
   chip.classList.add("deselected");
   selectedChips = selectedChips.filter((item) => item != id);
-  console.log(selectedChips);
 }
 
 async function fetchNewAffirmation(modelId) {
@@ -80,10 +78,8 @@ async function fetchNewAffirmation(modelId) {
     // set the affirmation in HTML
     document.querySelector("#affirmation").innerHTML = affirmation;
   } catch (err) {
-    console.error(err);
     document.querySelector("#affirmation").innerHTML = err;
     disableButton(false);
-    throw err; // propogate error up, I know this is kinda stupid but I'm also way too lazy to do this properly
   }
   disableButton(false);
 }
@@ -114,26 +110,12 @@ async function generateImage() {
 
 // generate affirmation with Llama w/ mistral fallback
 async function generateLlama() {
-  try {
-    await fetchNewAffirmation(llama3Id);
-  } catch (err) {
-    document.querySelector("#affirmation").innerHTML +=
-      "\nRetrying with other model";
-    await new Promise((r) => setTimeout(r, 1000)); // so user has time to read error before falling back to other model
-    await fetchNewAffirmation(mistralId); // fallback model
-  }
+  await fetchNewAffirmation(llama3Id);
 }
 
 // generate affirmation with mistral w/ Llama fallback
 async function generateMistral() {
-  try {
-    await fetchNewAffirmation(mistralId);
-  } catch (err) {
-    document.querySelector("#affirmation").innerHTML +=
-      "\nRetrying with other model";
-    await new Promise((r) => setTimeout(r, 1000)); // so user has time to read error before falling back to other model
-    await fetchNewAffirmation(llama3Id); // fallback model
-  }
+  await fetchNewAffirmation(mistralId);
 }
 
 // Shows a loading animation while fetching a new affirmation
@@ -170,7 +152,6 @@ async function init() {
     // Once everything is setup, let's get the first affirmation
     await generateLlama();
   } catch (err) {
-    console.error(err);
     document.querySelector("#affirmation").innerHTML = err;
   }
 
